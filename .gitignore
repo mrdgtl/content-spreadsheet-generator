@@ -1,0 +1,79 @@
+# Dependencies
+node_modules/
+bower_components/
+
+# Build outputs
+dist/
+build/
+*.min.js
+*.min.css
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Environment Variables
+.env
+.env.local
+.env.production
+.env.test
+
+# Temporary Files
+*.tmp
+*.temp
+*.cache
+.sass-cache/
+
+# API Keys and Secrets
+config/secrets.js
+*.key
+*.pem
+
+# Database
+*.db
+*.sqlite
+
+# Backup Files
+*.bak
+*.backup
+*.old
+
+# Python (if adding backend later)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Documentation build
+docs/_build/
