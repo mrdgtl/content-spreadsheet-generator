@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Spreadsheet Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: #2563eb;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .input-section {
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-message {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .status-message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .status-message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        .preview-section {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .section-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .type-hero { background: #dbeafe; color: #1e40af; }
+        .type-about { background: #d1fae5; color: #065f46; }
+        .type-service { background: #fef3c7; color: #92400e; }
+        .type-cta { background: #ede9fe; color: #5b21b6; }
+        .type-other { background: #f3f4f6; color: #374151; }
+
+        .char-count {
+            font-family: monospace;
+            color: #6b7280;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .prompt-text {
+            font-size: 0.875rem;
+            color: #4b5563;
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .prompt-text:hover {
+            white-space: normal;
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Content Spreadsheet Generator</h1>
+            <p class="subtitle">Analyze any webpage and generate SEO-optimized content templates</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="input-section">
+                <h2>Step 1: Analyze a Webpage</h2>
+                <div class="input-group">
+                    <label for="url-input">Enter the URL of the webpage to analyze:</label>
+                    <input 
+                        type="url" 
+                        id="url-input" 
+                        placeholder="https://example-junkremoval.com"
+                        value=""
+                    >
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" onclick="analyzeURL()">
+                        Analyze Page
+                    </button>
+                    <button class="btn-secondary" onclick="loadSampleData()">
+                        Load Sample Data
+                    </button>
+                </div>
+            </div>
+
+            <div id="status-message" class="status-message"></div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing webpage content...</p>
+            </div>
+
+            <div class="preview-section" id="preview-section">
+                <div class="preview-header">
+                    <h2>Step 2: Review & Export</h2>
+                    <button class="btn-success" onclick="exportToCSV()">
+                        Export to CSV
+                    </button>
+                </div>
+                
+                <table id="content-table">
+                    <thead>
+                        <tr>
+                            <th>Section ID</th>
+                            <th>Type</th>
+                            <th>Sample Text</th>
+                            <th>Chars</th>
+                            <th>SEO Prompt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let analyzedData = [];
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status-message');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            statusEl.style.display = 'block';
+            
+            if (type !== 'error') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        async function analyzeURL() {
+            const url = document.getElementById('url-input').value.trim();
+            
+            if (!url) {
+                showStatus('Please enter a URL to analyze', 'error');
+                return;
+            }
+
+            if (!url.match(/^https?:\/\/.+/)) {
+                showStatus('Please enter a valid URL starting with http:// or https://', 'error');
+                return;
+            }
+
+            showLoading(true);
+            showStatus('Analyzing webpage content...', 'info');
+
+            // Simulate API call - in production, this would call your backend
+            setTimeout(() => {
+                // For demo purposes, generate sample data based on URL
+                analyzedData = generateSampleAnalysis(url);
+                displayResults(analyzedData);
+                showLoading(false);
+                showStatus('Analysis complete! Review the content blocks below.', 'success');
+            }, 2000);
+        }
+
+        function generateSampleAnalysis(url) {
+            // This simulates what your backend would return
+            const sectionTypes = ['hero', 'about', 'service', 'cta', 'other'];
+            const data = [];
+            
+            // Hero Section
+            data.push({
+                sectionId: 'homepage-hero',
+                type: 'hero',
+                sampleText: 'Professional Junk Removal Services - Fast, Reliable, and Eco-Friendly Solutions for Your Home and Business',
+                charCount: 110,
+                prompt: 'Write a compelling hero section that introduces {{Company Name}} as the premier junk removal service in {{Location}}. Highlight immediate availability and {{Special Discount}}.'
+            });
+
+            // About Section
+            data.push({
+                sectionId: 'homepage-about',
+                type: 'about',
+                sampleText: 'We are a locally owned and operated junk removal company dedicated to providing efficient, affordable, and environmentally responsible services.',
+                charCount: 145,
+                prompt: 'Create an engaging about section explaining why customers choose {{Company Name}} for their junk removal needs in {{Location}}. Emphasize local ownership and eco-friendly practices.'
+            });
+
+            // Service Sections
+            const services = ['Residential', 'Commercial', 'Construction Debris', 'Estate Cleanout'];
+            services.forEach((service, index) => {
+                data.push({
+                    sectionId: `service-${index + 1}`,
+                    type: 'service',
+                    sampleText: `${service} junk removal services tailored to meet your specific needs with professional and courteous service.`,
+                    charCount: 95 + (index * 10),
+                    prompt: `Describe ${service.toLowerCase()} junk removal services offered by {{Company Name}}, emphasizing professional solutions for {{Location}} residents and businesses.`
+                });
+            });
+
+            // CTA Section
+            data.push({
+                sectionId: 'homepage-cta',
+                type: 'cta',
+                sampleText: 'Call now for same-day service and get your free estimate!',
+                charCount: 58,
+                prompt: 'Write a strong call-to-action encouraging customers to contact {{Company Name}} at {{Phone Number}} for same-day junk removal service. Mention {{Business Hours}} availability.'
+            });
+
+            return data;
+        }
+
+        function loadSampleData() {
+            document.getElementById('url-input').value = 'https://example-junkremoval.com';
+            analyzeURL();
+        }
+
+        function displayResults(data) {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${item.sectionId}</strong></td>
+                    <td><span class="section-type type-${item.type}">${item.type}</span></td>
+                    <td>${item.sampleText.substring(0, 60)}${item.sampleText.length > 60 ? '...' : ''}</td>
+                    <td class="char-count">${item.charCount}</td>
+                    <td class="prompt-text" title="${item.prompt}">${item.prompt}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('preview-section').style.display = 'block';
+        }
+
+        function exportToCSV() {
+            if (analyzedData.length === 0) {
+                showStatus('No data to export', 'error');
+                return;
+            }
+
+            // Create CSV content
+            const headers = ['Section ID', 'Section Name', 'Keywords', 'Sample Text', 'Character Count', 'Content Prompt'];
+            const csvContent = [
+                headers.join(','),
+                ...analyzedData.map(item => [
+                    item.sectionId,
+                    item.type,
+                    '', // Keywords column - empty for now
+                    `"${item.sampleText.replace(/"/g, '""')}"`,
+                    item.charCount,
+                    `"${item.prompt.replace(/"/g, '""')}"`
+                ].join(','))
+            ].join('\n');
+
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `content-template-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            showStatus('CSV exported successfully!', 'success');
+        }
+
+        // Initialize with sample data button highlighted
+        window.onload = () => {
+            showStatus('Enter a URL to analyze or click "Load Sample Data" to see a demo', 'info');
+        };
+    </script>
+</body>
+</html>
